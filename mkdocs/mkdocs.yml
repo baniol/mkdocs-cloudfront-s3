@@ -1,0 +1,17 @@
+site_name: First Project
+site_url: https://example.com
+nav:
+  - Home: index.md
+  - About:
+    - Intro: about.md
+    - Some: subsection/some_doc.md
+    - Diagram: subsection/embedded.md
+theme:
+  name: material
+  palette:
+    primary: blue
+markdown_extensions:
+    - toc:
+        permalink: true
+plugins:
+  - search

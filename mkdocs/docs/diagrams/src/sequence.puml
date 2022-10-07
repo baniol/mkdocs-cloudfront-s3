@@ -1,0 +1,49 @@
+@startuml Secure S3 with OAuth2 - sequence
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v13.1/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/NetworkingContentDelivery/CloudFront.puml
+!include AWSPuml/SecurityIdentityCompliance/Cognito.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+!include AWSPuml/SecurityIdentityCompliance/DirectoryServiceSimpleAD.puml
+
+!include AWSPuml/AWSSimplified.puml
+
+'Comment out to use default PlantUML sequence formatting
+skinparam participant {
+    BackgroundColor AWS_BG_COLOR
+    BorderColor AWS_BORDER_COLOR
+}
+
+'Hide the bottom boxes / Use filled triangle arrowheads
+hide footbox
+skinparam style strictuml
+
+!procedure $stepnum($number) 
+<back:black><color:white><b> $number </b></color></back>
+!endprocedure
+
+actor User as user
+box AWS Cloud
+'Instead of using ...Participant(), native creole img tags can be used
+participant "$CloudFrontIMG()\nCloudFront with \nLambda@Edge" as cloudFront
+participant "$CognitoIMG()\nCognito User Pool" as cognito
+participant "$SimpleStorageServiceIMG()\nOrigin static\nresources" as origin
+endbox
+participant "$DirectoryServiceSimpleADIMG()\nActive Directory" as ad
+
+'Use shortcut syntax for activation with colored lifelines and return keyword
+user -> cloudFront++ AWS_COLOR_PINK: $stepnum("1") No token cookie
+return 307: $stepnum("2")
+user -> cognito++ AWS_COLOR_GREEN: $stepnum("3") GET oauth2/authorize
+return 302: $stepnum("4")
+user -> ad++ AWS_COLOR_BLUE: $stepnum("5") Microsoft login
+return 302: $stepnum("6")
+user -> cloudFront++ AWS_COLOR_PINK: $stepnum("7") index.html&code=xxx
+cloudFront -> cognito++ AWS_COLOR_GREEN: $stepnum("8") POST oauth2/token
+return $stepnum("9")
+return $stepnum("10")
+user -> cloudFront++ AWS_COLOR_PINK: $stepnum("11") index.html with token cookie
+cloudFront -> origin++ AWS_COLOR_ORANGE: $stepnum("12")
+return $stepnum("13")
+return $stepnum("14")
+@enduml

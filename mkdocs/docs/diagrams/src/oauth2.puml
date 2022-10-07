@@ -1,0 +1,33 @@
+@startuml Secure S3 with OAuth2 - diagram
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v13.1/dist
+!include AWSPuml/AWSCommon.puml
+
+' Uncomment the following line to create simplified view
+!include AWSPuml/AWSSimplified.puml
+
+!include AWSPuml/General/User.puml
+!include AWSPuml/NetworkingContentDelivery/CloudFront.puml
+!include AWSPuml/Compute/LambdaLambdaFunction.puml
+!include AWSPuml/SecurityIdentityCompliance/Cognito.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+!include AWSPuml/SecurityIdentityCompliance/DirectoryServiceSimpleAD.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+
+AvailabilityZoneGroup(az_2, "OAuth") {
+    CloudFront(cfAlias, "CloudFront", "Request")
+    LambdaLambdaFunction(lambdaAlias, "Lambda@Edge", "asdf")
+    Cognito(cognitoAlias, "Cognito", "asdf")
+}
+
+User(userAlias, "Client browser", "Request")
+SimpleStorageService(storageAlias, "Origin", "S3 Bucket", "Optional Description")
+DirectoryServiceSimpleAD(ad, "AD", "asdf")
+
+userAlias --> cfAlias
+lambdaAlias --> cognitoAlias
+cfAlias --> lambdaAlias
+userAlias --> cognitoAlias
+cfAlias --> storageAlias
+cognitoAlias --> ad
+
+@enduml

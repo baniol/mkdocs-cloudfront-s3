@@ -40,13 +40,13 @@ resource "aws_cloudfront_distribution" "mkdocs-distribution" {
   comment             = "MkDocs template"
   default_root_object = "index.html"
 
-#   logging_config {
-#     include_cookies = false
-#     bucket          = "mylogs.s3.amazonaws.com"
-#     prefix          = "myprefix"
-#   }
-
-#   aliases = ["mkdocs.shiftbits.net"]
+  #   logging_config {
+  #     include_cookies = false
+  #     bucket          = "mylogs.s3.amazonaws.com"
+  #     prefix          = "myprefix"
+  #   }
+  # must depend on cert !
+  aliases = ["mkdocs.shiftbits.net"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -67,62 +67,62 @@ resource "aws_cloudfront_distribution" "mkdocs-distribution" {
     max_ttl                = 86400
 
     function_association {
-      event_type = "viewer-request"
+      event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.mkdocs.arn
     }
   }
 
   # Cache behavior with precedence 0
-#   ordered_cache_behavior {
-#     path_pattern     = "/content/immutable/*"
-#     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-#     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-#     target_origin_id = local.s3_origin_id
+  #   ordered_cache_behavior {
+  #     path_pattern     = "/content/immutable/*"
+  #     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+  #     cached_methods   = ["GET", "HEAD", "OPTIONS"]
+  #     target_origin_id = local.s3_origin_id
 
-#     forwarded_values {
-#       query_string = false
-#       headers      = ["Origin"]
+  #     forwarded_values {
+  #       query_string = false
+  #       headers      = ["Origin"]
 
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+  #       cookies {
+  #         forward = "none"
+  #       }
+  #     }
 
-#     min_ttl                = 0
-#     default_ttl            = 86400
-#     max_ttl                = 31536000
-#     compress               = true
-#     viewer_protocol_policy = "redirect-to-https"
-#   }
+  #     min_ttl                = 0
+  #     default_ttl            = 86400
+  #     max_ttl                = 31536000
+  #     compress               = true
+  #     viewer_protocol_policy = "redirect-to-https"
+  #   }
 
   # Cache behavior with precedence 1
-#   ordered_cache_behavior {
-#     path_pattern     = "/content/*"
-#     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-#     cached_methods   = ["GET", "HEAD"]
-#     target_origin_id = local.s3_origin_id
+  #   ordered_cache_behavior {
+  #     path_pattern     = "/content/*"
+  #     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+  #     cached_methods   = ["GET", "HEAD"]
+  #     target_origin_id = local.s3_origin_id
 
-#     forwarded_values {
-#       query_string = false
+  #     forwarded_values {
+  #       query_string = false
 
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+  #       cookies {
+  #         forward = "none"
+  #       }
+  #     }
 
-#     min_ttl                = 0
-#     default_ttl            = 3600
-#     max_ttl                = 86400
-#     compress               = true
-#     viewer_protocol_policy = "redirect-to-https"
-#   }
+  #     min_ttl                = 0
+  #     default_ttl            = 3600
+  #     max_ttl                = 86400
+  #     compress               = true
+  #     viewer_protocol_policy = "redirect-to-https"
+  #   }
 
   price_class = "PriceClass_100"
 
   restrictions {
     geo_restriction {
       restriction_type = "none"
-      locations = []
+      locations        = []
     }
   }
 
@@ -130,7 +130,13 @@ resource "aws_cloudfront_distribution" "mkdocs-distribution" {
     Environment = "dev"
   }
 
+  # viewer_certificate {
+  #   cloudfront_default_certificate = true
+  # }
+
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate.cert.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }

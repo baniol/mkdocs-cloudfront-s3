@@ -1,5 +1,5 @@
 resource "aws_cloudfront_function" "mkdocs" {
-  name = "RewriteDefaultIndexRequest"
+  name    = "RewriteDefaultIndexRequest"
   runtime = "cloudfront-js-1.0"
   comment = "Rewrite index.html"
   publish = true

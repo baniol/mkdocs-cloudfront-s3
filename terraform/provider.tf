@@ -2,16 +2,21 @@
 terraform {
   # required_version = ">=0.12.13"
   backend "s3" {
-   bucket         = "terraform-backend-baniol"
-   key            = "mkdocs-aws/terraform.tfstate"
-   region         = "eu-central-1"
-   dynamodb_table = "terraform-locks-baniol"
-   encrypt        = true
+    bucket         = "terraform-backend-baniol"
+    key            = "mkdocs-aws/terraform.tfstate"
+    region         = "eu-central-1"
+    dynamodb_table = "terraform-locks-baniol"
+    encrypt        = true
   }
 }
 
 # Download any stable version in AWS provider of 2.36.0 or higher in 2.36 train
 provider "aws" {
-  region  = "eu-central-1"
+  region = "eu-central-1"
   # version = "~> 2.36.0"
+}
+
+provider "aws" {
+  alias  = "virginia"
+  region = "us-east-1"
 }

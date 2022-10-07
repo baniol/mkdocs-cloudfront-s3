@@ -25,12 +25,6 @@ jobs:
             terraform init
         working-directory: "./terraform"
 
-      # - name: Terraform Plan
-      #   id: plan
-      #   if: github.event_name == 'push'
-      #   run: terraform plan -no-color
-        working-directory: "./terraform"
-
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
